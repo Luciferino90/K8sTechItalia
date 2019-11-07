@@ -1,0 +1,78 @@
+#
+# docker run -p 27017:27017 -v mongovolume:/data/db mongo
+# docker volume inspect mongovolume
+# Mountpoint to spec.template.spec.volumes.name['mongodb'].hostPath.path
+#
+#
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: mongodb
+  namespace: techitalia
+  labels:
+    k8s-app: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: mongodb
+  template:
+    metadata:
+      name: mongodb
+      labels:
+        k8s-app: mongodb
+    spec:
+      volumes:
+      - name: mongodb
+        hostPath:
+          path: "/var/lib/docker/volumes/mongovolume/_data"
+          type: DirectoryOrCreate
+      containers:
+      - name: mongodb
+        image: mongo
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: root
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: nameless
+        resources: {}
+        volumeMounts:
+        - name: mongodb
+          mountPath: "/data/db"
+        terminationMessagePath: "/dev/termination-log"
+        terminationMessagePolicy: File
+        imagePullPolicy: Always
+        securityContext:
+          privileged: false
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mongodb
+  namespace: techitalia
+  labels:
+    k8s-app: mongodb
+spec:
+  ports:
+  - name: tcp-27017-27017-l9jcc
+    protocol: TCP
+    port: 27017
+    targetPort: 27017
+  selector:
+    k8s-app: mongodb
+  type: LoadBalancer
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
