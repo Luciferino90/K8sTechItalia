@@ -57,7 +57,11 @@ spec:
   ports:
   - name: registry
     port: 5000
+    targetPort: 5000
     protocol: TCP
+  type: LoadBalancer
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
 ---
 apiVersion: extensions/v1beta1
 kind: DaemonSet
