@@ -1,6 +1,5 @@
----
 kind: Deployment
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 metadata:
   name: kafka
   namespace: techitalia
@@ -14,13 +13,36 @@ spec:
   template:
     metadata:
       name: kafka
-      creationTimestamp: 
+      creationTimestamp: null
       labels:
         k8s-app: kafka
     spec:
       containers:
-      - name: kafka
-        image: johnnypark/kafka-zookeeper
+        - name: kafka
+          image: johnnypark/kafka-zookeeper
+          env:
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: 'PLAINTEXT://kafka.techitalia:9092'
+            - name: ADVERTISED_LISTENERS
+              value: kafka.techitalia
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+          securityContext:
+            privileged: false
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
 ---
 kind: Service
 apiVersion: v1

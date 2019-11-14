@@ -1,0 +1,9 @@
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: mongo-init
+  namespace: techitalia
+data:
+  init.js: cnMuaW5pdGlhdGUoKTs=
+type: Opaque
