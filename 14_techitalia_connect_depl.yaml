@@ -1,3 +1,4 @@
+---
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -83,15 +84,15 @@ spec:
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 60; cd /tmp; curl -X POST -H 'Content-Type: application/json' -d @source-connector.json http://localhost:8083/connectors"]  
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst
       securityContext: {}
       schedulerName: default-scheduler
-      hostAliases:
-        - ip: 10.111.143.18
-          hostnames:
-            - kafka-8587c7c85c-b7pqr
   strategy:
     type: RollingUpdate
     rollingUpdate:

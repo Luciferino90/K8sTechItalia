@@ -1,0 +1,21 @@
+---
+### Kafka Manager Service
+kind: Service
+apiVersion: v1
+metadata:
+  name: kafka-manager
+  namespace: techitalia
+  labels:
+    k8s-app: kafka-manager
+spec:
+  ports:
+    - name: tcp-9000-9006-qcn8r
+      protocol: TCP
+      port: 9000
+      targetPort: 9000
+      nodePort: 31277
+  selector:
+    k8s-app: kafka-manager
+  type: LoadBalancer
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster

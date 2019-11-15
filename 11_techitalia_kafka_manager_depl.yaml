@@ -1,3 +1,4 @@
+---
 ### Kafka Manager
 kind: Deployment
 apiVersion: apps/v1
@@ -36,10 +37,6 @@ spec:
       dnsPolicy: ClusterFirst
       securityContext: {}
       schedulerName: default-scheduler
-      hostAliases:
-        - ip: 10.111.143.18
-          hostnames:
-            - kafka-8587c7c85c-b7pqr
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -47,24 +44,3 @@ spec:
       maxSurge: 25%
   revisionHistoryLimit: 10
   progressDeadlineSeconds: 600
----
-### Kafka Manager Service
-kind: Service
-apiVersion: v1
-metadata:
-  name: kafka-manager
-  namespace: techitalia
-  labels:
-    k8s-app: kafka-manager
-spec:
-  ports:
-    - name: tcp-9000-9006-qcn8r
-      protocol: TCP
-      port: 9000
-      targetPort: 9000
-      nodePort: 31277
-  selector:
-    k8s-app: kafka-manager
-  type: LoadBalancer
-  sessionAffinity: None
-  externalTrafficPolicy: Cluster
