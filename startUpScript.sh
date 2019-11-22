@@ -8,7 +8,7 @@ kubectl apply -f 6_techitalia_mongo_secret.yaml
 kubectl apply -f 7_techitalia_mongo_depl.yaml
 kubectl apply -f 8_techitalia_mongo_service.yaml
 # replica wait time
-sleep 50
+sleep 70 
 MONGO_POD_NAME=$(kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' --namespace=techitalia | grep mongo)
 kubectl exec -it --namespace=techitalia "$MONGO_POD_NAME" -- bash -c "mongo -u tech -p italia --authenticationDatabase techitalia --eval \"db.getSiblingDB('techitalia').createCollection('documents')\""
 kubectl exec -it --namespace=techitalia "$MONGO_POD_NAME" -- bash -c "mongo -u tech -p italia --authenticationDatabase techitalia --eval \"db.getSiblingDB('techitalia').createCollection('movies')\""
