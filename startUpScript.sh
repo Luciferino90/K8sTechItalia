@@ -5,6 +5,7 @@ JAVA_PROJECT_DIR=/Users/luca/workbench/techitalia/Java/sparkstream
 
 cd $K8S_YAML_DIR
 
+kubectl apply -f 17_kubernetes-dashboard-svc.yaml
 kubectl apply -f 1_registry_ns.yaml
 kubectl apply -f 6_techitalia_mongo_secret.yaml
 kubectl apply -f 7_techitalia_mongo_depl.yaml
@@ -61,6 +62,5 @@ nohup bin/spark-submit \
 	&
 
 cd $K8S_YAML_DIR
-kubectl apply -f zeppelin-server.yaml
-sleep 10
-kubectl port-forward zeppelin-server 8080:80
+kubectl apply -f 15_zeppelin-server.yaml
+kubectl apply -f 16_zeppelin-svc.yaml

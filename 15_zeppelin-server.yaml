@@ -98,6 +98,8 @@ spec:
       value: /zeppelin
     - name: ZEPPELIN_SERVER_RPC_PORTRANGE
       value: 12320:12320
+    - name: SPARK_HOME
+      value: /opt/spark
     - name: POD_UID
       valueFrom:
         fieldRef:
