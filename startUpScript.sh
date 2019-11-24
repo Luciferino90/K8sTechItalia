@@ -5,7 +5,8 @@ JAVA_PROJECT_DIR=/Users/luca/workbench/techitalia/Java/sparkstream
 
 cd $K8S_YAML_DIR
 
-kubectl apply -f 17_kubernetes-dashboard-svc.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta6/aio/deploy/recommended.yaml
+#kubectl apply -f 17_kubernetes-dashboard-svc.yaml
 kubectl apply -f 1_registry_ns.yaml
 kubectl apply -f 6_techitalia_mongo_secret.yaml
 kubectl apply -f 7_techitalia_mongo_depl.yaml

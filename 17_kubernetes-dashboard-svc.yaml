@@ -12,4 +12,3 @@ spec:
     k8s-app: kubernetes-dashboard
   type: LoadBalancer
   sessionAffinity: None
-  externalTrafficPolicy: Cluster
