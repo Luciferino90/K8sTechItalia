@@ -113,15 +113,15 @@ RUN echo "$LOG_TAG Cleanup" && \
 
 ADD zeppelin-${Z_VERSION}.tar.gz /
 RUN ln -s /zeppelin-${Z_VERSION} /zeppelin
-#RUN chown -R zeppelinus:zeppelinus /zeppelin
-#RUN chown -R zeppelinus:zeppelinus /zeppelin-0.9.0-SNAPSHOT
+RUN chown -R zeppelinus:zeppelinus /zeppelin
+RUN chown -R zeppelinus:zeppelinus /zeppelin-0.9.0-SNAPSHOT
 
-#COPY log4j.properties ${Z_HOME}/conf/
+COPY log4j.properties ${Z_HOME}/conf/
 
-#USER zeppelinus
+USER zeppelinus
 
-#EXPOSE 8080
+EXPOSE 8080
 
-#ENTRYPOINT [ "/usr/bin/tini", "--" ]
-#WORKDIR ${Z_HOME}
-#CMD ["bin/zeppelin.sh"]
+ENTRYPOINT [ "/usr/bin/tini", "--" ]
+WORKDIR ${Z_HOME}
+CMD ["bin/zeppelin.sh"]
