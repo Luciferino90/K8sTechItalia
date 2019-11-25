@@ -59,8 +59,7 @@ nohup bin/spark-submit \
 	-v \
 	local:///opt/spark/examples/jars/app.jar/app.jar \
 	-Dlog4j.debug=true \
-	-Dlog4j.configuration=file:/app/log4j.properties \
-	&
+	-Dlog4j.configuration=file:/app/log4j.properties
 
 cd $K8S_YAML_DIR
 kubectl apply -f 15_zeppelin-server.yaml

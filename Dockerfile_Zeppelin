@@ -104,18 +104,17 @@ RUN echo "$LOG_TAG Cleanup" && \
     apt-get autoclean && \
     apt-get clean
 
+#RUN echo "$LOG_TAG Download Zeppelin binary" && \
+#    wget -O /tmp/zeppelin-${Z_VERSION}-bin-all.tgz http://archive.apache.org/dist/zeppelin/zeppelin-${Z_VERSION}/zeppelin-${Z_VERSION}-bin-all.tgz && \
+#    tar -zxvf /tmp/zeppelin-${Z_VERSION}-bin-all.tgz && \
+#    rm -rf /tmp/zeppelin-${Z_VERSION}-bin-all.tgz && \
+#    mv /zeppelin-${Z_VERSION}-bin-all/* ${Z_HOME}/ && \
+#    chown -R zeppelin:zeppelin ${Z_HOME}/  
 
-COPY zeppelin-${Z_VERSION}.tgz /tmp
-RUN echo "$LOG_TAG Cleanup" && \
-    apt-get autoclean && \
-    apt-get clean
-
-#RUN cd /tmp
-RUN tar -zxvf /tmp/zeppelin-${Z_VERSION}.tgz -C /tmp
-#RUN mv /zeppelin-0.9.0 /tmp/zeppelin-${Z_VERSION}
-RUN rm -rf /tmp/zeppelin-${Z_VERSION}.tgz 
-RUN mv /tmp/zeppelin-*/* ${Z_HOME}/
-RUN chown -R zeppelin:zeppelin ${Z_HOME}/
+ADD zeppelin-${Z_VERSION}.tar.gz /
+RUN ln -s /zeppelin-${Z_VERSION} /zeppelin
+RUN chown -R zeppelin:zeppelin /zeppelin
+RUN chown -R zeppelin:zeppelin /zeppelin-0.9.0-SNAPSHOT
 
 COPY log4j.properties ${Z_HOME}/conf/
 
