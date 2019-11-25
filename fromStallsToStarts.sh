@@ -6,14 +6,14 @@ JAVA_PROJECT_DIR=/Users/luca/workbench/techitalia/Java/sparkstream
 cd $K8S_YAML_DIR
 
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta6/aio/deploy/recommended.yaml
-#kubectl apply -f 17_kubernetes-dashboard-svc.yaml
-#kubectl apply -f 1_registry_ns.yaml
+kubectl apply -f 17_kubernetes-dashboard-svc.yaml
+kubectl apply -f 1_registry_ns.yaml
 kubectl apply -f 6_techitalia_mongo_secret.yaml
 kubectl apply -f 7_techitalia_mongo_depl.yaml
 kubectl apply -f 8_techitalia_mongo_service.yaml
-#kubectl apply -f 2_kube_registry_rs.yaml
-#kubectl apply -f 3_kube_registry_service.yaml
-#kubectl apply -f 4_kube_registry_proxy_ds.yaml
+kubectl apply -f 2_kube_registry_rs.yaml
+kubectl apply -f 3_kube_registry_service.yaml
+kubectl apply -f 4_kube_registry_proxy_ds.yaml
 kubectl apply -f 5_techiitalia_ns.yaml
 kubectl apply -f 9_techitalia_kafka_depl.yaml
 kubectl apply -f 10_techitalia_kafka_service.yaml
@@ -61,6 +61,19 @@ nohup bin/spark-submit \
 	-Dlog4j.debug=true \
 	-Dlog4j.configuration=file:/app/log4j.properties
 
+# https://zeppelin.apache.org/docs/0.9.0-SNAPSHOT/quickstart/kubernetes.html
+git https://github.com/apache/zeppelin.git
+cd zeppelin
+mvn package -DskipTests -Pbuild-distr
+mv zeppelin-distribution/target/zeppelin-*.tar.gz scripts/docker/zeppelin/bin/
+cp Dockerfile_Zeppelin scripts/docker/zeppelin/bin/
+mv scripts/docker/zeppelin/bin/Dockerfile scripts/docker/zeppelin/bin/Dockerfile.original
+mv scripts/docker/zeppelin/bin/Dockerfile_Zeppelin scripts/docker/zeppelin/bin/Dockerfile
+docker build -t zeppelin-home:latest .
+docker tag zeppelin-home:latest localhost:5000/zeppelin-home:latest
+docker push localhost:5000/zeppelin-home:latest
 cd $K8S_YAML_DIR
 kubectl apply -f 15_zeppelin-server.yaml
 kubectl apply -f 16_zeppelin-svc.yaml
+
+

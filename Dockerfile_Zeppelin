@@ -23,13 +23,13 @@ ARG ZEPPELIN_GROUP_ID=2100
 ENV Z_VERSION="0.9.0-SNAPSHOT"
 
 ENV LOG_TAG="[ZEPPELIN_${Z_VERSION}]:" \
-    Z_HOME="/zeppelin" \
+    Z_HOME="/zeppelinus" \
     LANG=en_US.UTF-8 \
     LC_ALL=en_US.UTF-8 \
     ZEPPELIN_ADDR="0.0.0.0"
 
-RUN groupadd --gid $ZEPPELIN_GROUP_ID zeppelin \
-    && useradd -ms /bin/bash -d ${Z_HOME} zeppelin --uid $ZEPPELIN_USER_ID --gid $ZEPPELIN_GROUP_ID
+RUN groupadd --gid $ZEPPELIN_GROUP_ID zeppelinus \
+    && useradd -ms /bin/bash -d ${Z_HOME} zeppelinus --uid $ZEPPELIN_USER_ID --gid $ZEPPELIN_GROUP_ID
 
 RUN echo "$LOG_TAG update and install basic packages" && \
     apt-get -y update && \
@@ -113,15 +113,15 @@ RUN echo "$LOG_TAG Cleanup" && \
 
 ADD zeppelin-${Z_VERSION}.tar.gz /
 RUN ln -s /zeppelin-${Z_VERSION} /zeppelin
-RUN chown -R zeppelin:zeppelin /zeppelin
-RUN chown -R zeppelin:zeppelin /zeppelin-0.9.0-SNAPSHOT
+#RUN chown -R zeppelinus:zeppelinus /zeppelin
+#RUN chown -R zeppelinus:zeppelinus /zeppelin-0.9.0-SNAPSHOT
 
-COPY log4j.properties ${Z_HOME}/conf/
+#COPY log4j.properties ${Z_HOME}/conf/
 
-USER zeppelin
+#USER zeppelinus
 
-EXPOSE 8080
+#EXPOSE 8080
 
-ENTRYPOINT [ "/usr/bin/tini", "--" ]
-WORKDIR ${Z_HOME}
-CMD ["bin/zeppelin.sh"]
+#ENTRYPOINT [ "/usr/bin/tini", "--" ]
+#WORKDIR ${Z_HOME}
+#CMD ["bin/zeppelin.sh"]

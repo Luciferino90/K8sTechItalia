@@ -1,0 +1,37 @@
+apiVersion: "sparkoperator.k8s.io/v1beta1"
+kind: SparkApplication
+metadata:
+  name: demo-spark
+  namespace: default
+spec:
+  type: Java
+  mode: cluster
+  image: "localhost:5000/tech-spark:latest"
+  imagePullPolicy: Always
+  mainClass: it.arubapec.esecurity.mongostreamspark.SpringKafkaApplication
+  mainApplicationFile: "local:///opt/spark/examples/jars/app.jar/app.jar"
+  restartPolicy:
+    type: Always
+  volumes:
+    - name: config-vol
+      configMap:
+        name: my-cm
+  driver:
+    cores: 0.1
+    coreLimit: "200m"
+    memory: "512m"
+    labels:
+      version: 2.4.4
+    serviceAccount: default
+    volumeMounts:
+      - name: config-vol
+        mountPath: /opt/spark
+  executor:
+    cores: 1
+    instances: 1
+    memory: "512m"
+    labels:
+      version: 2.4.4
+    volumeMounts:
+      - name: config-vol
+        mountPath: /opt/spark
