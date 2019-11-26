@@ -1,0 +1,38 @@
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: parquet-pv
+  namespace: techitalia
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 3Gi
+  hostPath:
+    path: "REPLACE_ME"
+    type: ''
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: hostpath
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: parque-pv-claim
+  namespace: techitalia
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+  volumeName: parque-pv
+  storageClassName: hostpath
+status:
+  phase: Bound
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 3Gi
