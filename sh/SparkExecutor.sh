@@ -1,6 +1,8 @@
 #!/bin/sh
 cd /Users/luca/workbench/techitalia/Java/sparkstream
-docker build -t tech-spark:latest .
+
+
+docker build -t tech-spark:latest --build-arg JAR_FILE=mongo-spark-streaming-launch.jar --build-arg JAR_VERSION=0.0.1 --build-arg START_CLASS=it.arubapec.esecurity.mongostreamspark.SpringKafkaApplication .
 docker tag tech-spark:latest localhost:5000/tech-spark:latest
 docker push localhost:5000/tech-spark:latest
 
