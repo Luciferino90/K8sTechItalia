@@ -1,4 +1,42 @@
 ---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: registry-pv
+  namespace: registry
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 50Gi
+  hostPath:
+    path: "/Users/luca/kubernetes/registry"
+    type: ''
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: hostpath
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: registry-pv-claim
+  namespace: registry
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  volumeName: registry-pv
+  storageClassName: hostpath
+status:
+  phase: Bound
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 50Gi
+---
 apiVersion: v1
 kind: ReplicationController
 metadata:
@@ -20,6 +58,10 @@ spec:
         version: v0
         kubernetes.io/cluster-service: "true"
     spec:
+      volumes:
+      - name: image-store
+        persistentVolumeClaim:
+          claimName: registry-pv-claim
       containers:
       - name: registry
         image: registry:2
@@ -39,6 +81,3 @@ spec:
         - containerPort: 5000
           name: registry
           protocol: TCP
-      volumes:
-      - name: image-store
-        emptyDir: {}
