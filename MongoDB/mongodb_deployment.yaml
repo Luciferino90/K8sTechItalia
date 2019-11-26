@@ -90,11 +90,10 @@ spec:
               value: techitalia
           resources: {}
           volumeMounts:
-          - name: mongodb
-            mountPath: "/data/db"
-          volumeMounts:
           - name: mongo-init
             mountPath: "/docker-entrypoint-initdb.d"
+          - name: mongodb
+            mountPath: "/bitnami/mongodb/data/db"            
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           imagePullPolicy: Always
