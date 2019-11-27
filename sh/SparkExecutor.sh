@@ -11,9 +11,11 @@ bin/spark-submit \
        --master k8s://https://kubernetes.docker.internal:6443 \
        --deploy-mode cluster \
        --conf spark.executor.instances=2 \
+       --conf spark.kubernetes.namespace=techitalia \
        --conf spark.kubernetes.authenticate.driver.serviceAccountName=default \
        --conf spark.kubernetes.container.image=localhost:5000/tech-spark:latest \
        --class it.arubapec.esecurity.mongostreamspark.SpringKafkaApplication \
+       --conf "spark.kubernetes.driver.volumes.persistentVolumeClaim.parquet-pv-claim.mount.path=/Users/luca/.kubernetes/shared/parquet" \
        --conf "spark.executor.extraJavaOptions=-Dlog4j.configuration=file:/app/log4j.properties" \
        --conf "spark.driver.extraJavaOptions=-Dlog4j.configuration=file:/app/log4j.properties" \
        --name spark-pi \
