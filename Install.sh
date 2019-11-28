@@ -29,11 +29,11 @@ REGISTRY_HOME=$SRC_HOME/Registry
 mkdir -p $REGISTRY_HOME
 ZEPPELIN_HOME=$SRC_HOME/Zeppelin
 mkdir -p $ZEPPELIN_HOME
-PARQUET_HOME=$SRC_HOME/Parquet
-mkdir -p $PARQUET_HOME
 SPARK_FOLDER=spark-2.4.4-bin-hadoop2.7
 SPARK_FALLBACK_HOME=$SRC_HOME/$SPARK_FOLDER
 mkdir -p $SPARK_FALLBACK_HOME
+SPARK_OPERATOR_HOME=$SRC_HOME/SparkOperator
+mkdir -p $SPARK_OPERATOR_HOME
 
 cp -r Dashboard/* $DASHBOARD_HOME/
 cp -r Kafka/* $KAFKA_HOME/
@@ -41,14 +41,14 @@ cp -r KafkaConnect/* $KAFKA_CONNECT_HOME/
 cp -r MongoDB/* $MONGO_HOME/
 cp -r Registry/* $REGISTRY_HOME/
 cp -r Zeppelin/* $ZEPPELIN_HOME/
-cp -r Parquet/* $PARQUET_HOME/
 cp -r $SPARK_FOLDER/* $SPARK_FALLBACK_HOME
+cp -r SparkOperator/* $SPARK_OPERATOR_HOME
 
 cp $REGISTRY_HOME/daemon.json $HOME/.docker
 
 sed -i.bak "s+REPLACE_ME+$MONGODB_SHARED+g" $MONGO_HOME/mongodb_deployment.yaml && rm $MONGO_HOME/mongodb_deployment.yaml.bak
 sed -i.bak "s+REPLACE_ME+$REGISTRY_SHARED+g" $REGISTRY_HOME/kube_registry_rs.yaml && rm $REGISTRY_HOME/kube_registry_rs.yaml.bak
-sed -i.bak "s+REPLACE_ME+$PARQUET_SHARED+g" $PARQUET_HOME/parquet.yaml && rm $PARQUET_HOME/parquet.yaml.bak
+sed -i.bak "s+REPLACE_ME+$PARQUET_SHARED+g" $SPARK_OPERATOR_HOME/techitalia-spark-operator.yaml && rm $SPARK_OPERATOR_HOME/techitalia-spark-operator.yaml.bak
 
 if [ -d $SPARK_HOME ] ;
 then 
@@ -148,5 +148,15 @@ echo "Setup Zeppelin on K8s"
 echo
 kubectl apply -f zeppelin-server.yaml
 
+cd $SPARK_OPERATOR_HOME
+echo "Setup Spark K8s Operators"
+echo
+helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
+helm install incubator/sparkoperator --namespace techitalia --set enableWebhook=true --generate-name
+kubectl apply -f techitalia-spark-operator.yaml
+
 TOKEN=$(kubectl get secret | awk '{print $1}' | kubectl describe secret $1 | awk '/ey/' | awk '{print $2}')
+echo
+echo
 echo "Installation ended, login via https://localhost with token $TOKEN"
+
