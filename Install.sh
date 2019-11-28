@@ -45,18 +45,24 @@ cp -r $SPARK_FOLDER/* $SPARK_FALLBACK_HOME
 cp -r SparkOperator/* $SPARK_OPERATOR_HOME
 
 cp $REGISTRY_HOME/daemon.json $HOME/.docker
+cp Dockerfile_Spark $SPARK_FALLBACK_HOME/kubernetes/dockerfile/spark
+rm $SPARK_FALLBACK_HOME/kubernetes/dockerfile/spark/Dockerfile
+mv $SPARK_FALLBACK_HOME/kubernetes/dockerfile/spark/Dockerfile_Spark $SPARK_FALLBACK_HOME/kubernetes/dockerfile/spark/Dockerfile
 
 sed -i.bak "s+REPLACE_ME+$MONGODB_SHARED+g" $MONGO_HOME/mongodb_deployment.yaml && rm $MONGO_HOME/mongodb_deployment.yaml.bak
 sed -i.bak "s+REPLACE_ME+$REGISTRY_SHARED+g" $REGISTRY_HOME/kube_registry_rs.yaml && rm $REGISTRY_HOME/kube_registry_rs.yaml.bak
 sed -i.bak "s+REPLACE_ME+$PARQUET_SHARED+g" $SPARK_OPERATOR_HOME/techitalia-spark-operator.yaml && rm $SPARK_OPERATOR_HOME/techitalia-spark-operator.yaml.bak
+sed -i.bak "s+REPLACE_ME+$PARQUET_SHARED+g" $ZEPPELIN_HOME/zeppelin-server.yaml && rm $ZEPPELIN_HOME/zeppelin-server.yaml.bak
 
-if [ -d $SPARK_HOME ] ;
-then 
-	echo "SPARK_HOME FOUND $SPARK_HOME"
-else
-	SPARK_HOME=$SPARK_FALLBACK_HOME
-	echo "SPARK_HOME NOT FOUND SETTED DEFAULT $SPARK_HOME as $SPARK_FALLBACK_HOME"
-fi
+#if [ -d $SPARK_HOME ] ;
+#then 
+#	echo "SPARK_HOME FOUND $SPARK_HOME"
+#else
+#	SPARK_HOME=$SPARK_FALLBACK_HOME
+#	echo "SPARK_HOME NOT FOUND SETTED DEFAULT $SPARK_HOME as $SPARK_FALLBACK_HOME"
+#fi
+
+SPARK_HOME=$SPARK_FALLBACK_HOME
 
 echo "Environment setup ended"
 echo
@@ -136,6 +142,13 @@ docker build -t spark-home:latest -f kubernetes/dockerfiles/spark/Dockerfile .
 docker tag spark-home:latest localhost:5000/spark-home:latest
 docker push localhost:5000/spark-home:latest
 
+cd $SPARK_OPERATOR_HOME
+echo "Setup Spark K8s Operators"
+echo
+helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
+helm install incubator/sparkoperator --namespace techitalia --set enableWebhook=true --generate-name
+kubectl apply -f techitalia-spark-operator.yaml
+
 echo "Setup Zeppelin Image via Docker Registry"
 echo
 
@@ -147,13 +160,6 @@ docker push localhost:5000/zeppelin-home:latest
 echo "Setup Zeppelin on K8s"
 echo
 kubectl apply -f zeppelin-server.yaml
-
-cd $SPARK_OPERATOR_HOME
-echo "Setup Spark K8s Operators"
-echo
-helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
-helm install incubator/sparkoperator --namespace techitalia --set enableWebhook=true --generate-name
-kubectl apply -f techitalia-spark-operator.yaml
 
 TOKEN=$(kubectl get secret | awk '{print $1}' | kubectl describe secret $1 | awk '/ey/' | awk '{print $2}')
 echo
