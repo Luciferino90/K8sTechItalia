@@ -142,6 +142,13 @@ docker build -t spark-home:latest -f kubernetes/dockerfiles/spark/Dockerfile .
 docker tag spark-home:latest localhost:5000/spark-home:latest
 docker push localhost:5000/spark-home:latest
 
+cd sparkstream
+echo "Building Java Spark project"
+echo
+docker build -t tech-spark:latest --build-arg JAR_FILE=mongo-spark-streaming --build-arg JAR_VERSION=0.0.1 --build-arg START_CLASS=it.arubapec.esecurity.mongostreamspark.SpringKafkaApplication .
+docker tag tech-spark:latest localhost:5000/tech-spark:latest
+docker push localhost:5000/tech:spark
+
 cd $SPARK_OPERATOR_HOME
 echo "Setup Spark K8s Operators"
 echo
