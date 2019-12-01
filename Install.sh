@@ -1,8 +1,10 @@
 #!/bin/bash
 
 echo
-echo "Setup environment, it won't take long"
+echo "Setup environment starting"
 echo
+
+HOME_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 K8S_HOME=$HOME/.kubernetes
 SRC_HOME=$K8S_HOME/src
@@ -41,13 +43,13 @@ cp -r KafkaConnect/* $KAFKA_CONNECT_HOME/
 cp -r MongoDB/* $MONGO_HOME/
 cp -r Registry/* $REGISTRY_HOME/
 cp -r Zeppelin/* $ZEPPELIN_HOME/
-cp -r $SPARK_FOLDER/* $SPARK_FALLBACK_HOME
-cp -r SparkOperator/* $SPARK_OPERATOR_HOME
+cp -r $SPARK_FOLDER/* $SPARK_FALLBACK_HOME/
+cp -r SparkOperator/* $SPARK_OPERATOR_HOME/
 
 cp $REGISTRY_HOME/daemon.json $HOME/.docker
-cp Dockerfile_Spark $SPARK_FALLBACK_HOME/kubernetes/dockerfile/spark
-rm $SPARK_FALLBACK_HOME/kubernetes/dockerfile/spark/Dockerfile
-mv $SPARK_FALLBACK_HOME/kubernetes/dockerfile/spark/Dockerfile_Spark $SPARK_FALLBACK_HOME/kubernetes/dockerfile/spark/Dockerfile
+cp Dockerfile_Spark $SPARK_FALLBACK_HOME/kubernetes/dockerfiles/spark
+rm $SPARK_FALLBACK_HOME/kubernetes/dockerfiles/spark/Dockerfile
+mv $SPARK_FALLBACK_HOME/kubernetes/dockerfiles/spark/Dockerfile_Spark $SPARK_FALLBACK_HOME/kubernetes/dockerfiles/spark/Dockerfile
 
 sed -i.bak "s+REPLACE_ME+$MONGODB_SHARED+g" $MONGO_HOME/mongodb_deployment.yaml && rm $MONGO_HOME/mongodb_deployment.yaml.bak
 sed -i.bak "s+REPLACE_ME+$REGISTRY_SHARED+g" $REGISTRY_HOME/kube_registry_rs.yaml && rm $REGISTRY_HOME/kube_registry_rs.yaml.bak
@@ -95,7 +97,7 @@ kubectl apply -f mondodb_service.yaml
 echo "Waiting for MongoDB to be up & running.."
 echo
 
-sleep 30
+sleep 60
 
 echo "Setup Kafka and Zookeeper on K8s"
 echo
@@ -110,7 +112,7 @@ echo "Setup Kafka Connect via Docker Registry"
 echo "Waiting for registry to be up & running.."
 echo
 
-sleep 30
+sleep 60
 cd $KAFKA_CONNECT_HOME
 docker build -t connect:0.0.2 .
 docker tag connect:0.0.2 localhost:5000/connect:0.0.2
@@ -122,7 +124,7 @@ echo
 echo "Initializing base data for MongoDB"
 echo
 
-sleep 30
+sleep 60
 MONGO_POD_NAME=$(kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' --namespace=techitalia | grep mongo)
 kubectl exec -it --namespace=techitalia "$MONGO_POD_NAME" -- bash -c "mongo -u tech -p italia --authenticationDatabase techitalia --eval \"db.getSiblingDB('techitalia').createCollection('documents')\""
 kubectl exec -it --namespace=techitalia "$MONGO_POD_NAME" -- bash -c "mongo -u tech -p italia --authenticationDatabase techitalia --eval \"db.getSiblingDB('techitalia').createCollection('movies')\""
@@ -142,12 +144,12 @@ docker build -t spark-home:latest -f kubernetes/dockerfiles/spark/Dockerfile .
 docker tag spark-home:latest localhost:5000/spark-home:latest
 docker push localhost:5000/spark-home:latest
 
-cd sparkstream
+cd $HOME_DIR/sparkstream
 echo "Building Java Spark project"
 echo
-docker build -t tech-spark:latest --build-arg JAR_FILE=mongo-spark-streaming --build-arg JAR_VERSION=0.0.1 --build-arg START_CLASS=it.arubapec.esecurity.mongostreamspark.SpringKafkaApplication .
+docker build -t tech-spark:latest --build-arg JAR_FILE=mongo-spark-streaming-launch.jar --build-arg JAR_VERSION=0.0.1 --build-arg START_CLASS=it.arubapec.esecurity.mongostreamspark.SpringKafkaApplication .
 docker tag tech-spark:latest localhost:5000/tech-spark:latest
-docker push localhost:5000/tech:spark
+docker push localhost:5000/tech-spark:latest
 
 cd $SPARK_OPERATOR_HOME
 echo "Setup Spark K8s Operators"
