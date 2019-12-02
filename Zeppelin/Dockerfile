@@ -82,16 +82,18 @@ RUN echo "$LOG_TAG Install R related packages" && \
     gpg --keyserver keyserver.ubuntu.com --recv-key E084DAB9 && \
     gpg -a --export E084DAB9 | apt-key add - && \
     apt-get -y update && \
-    apt-get -y --allow-unauthenticated install r-base r-base-dev && \
-    R -e "install.packages('knitr', repos='http://cran.us.r-project.org')" && \
-    R -e "install.packages('ggplot2', repos='http://cran.us.r-project.org')" && \
-    R -e "install.packages('googleVis', repos='http://cran.us.r-project.org')" && \
-    R -e "install.packages('data.table', repos='http://cran.us.r-project.org')" && \
-    # for devtools, Rcpp
-    apt-get -y install libcurl4-gnutls-dev libssl-dev && \
-    R -e "install.packages('devtools', repos='http://cran.us.r-project.org')" && \
-    R -e "install.packages('Rcpp', repos='http://cran.us.r-project.org')" && \
-    Rscript -e "library('devtools'); library('Rcpp'); install_github('ramnathv/rCharts')"
+    apt-get -y --allow-unauthenticated install r-base r-base-dev
+
+RUN R -e "install.packages('knitr', repos='http://cran.us.r-project.org')"
+RUN R -e "install.packages('ggplot2', repos='http://cran.us.r-project.org')"
+RUN R -e "install.packages('googleVis', repos='http://cran.us.r-project.org')"
+RUN R -e "install.packages('data.table', repos='http://cran.us.r-project.org')"
+    
+# for devtools, Rcpp
+RUN apt-get -y install libcurl4-gnutls-dev libssl-dev
+RUN R -e "install.packages('devtools', repos='http://cran.us.r-project.org')"
+RUN R -e "install.packages('Rcpp', repos='http://cran.us.r-project.org')"
+RUN Rscript -e "library('devtools'); library('Rcpp'); install_github('ramnathv/rCharts')"
 
 # Install kubectl
 RUN apt-get install -y apt-transport-https && \
