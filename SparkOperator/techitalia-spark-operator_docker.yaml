@@ -92,7 +92,7 @@ spec:
     serviceAccount: spark
     volumeMounts:
       - name: parquet
-        mountPath: "REPLACE_ME"
+        mountPath: "/Users/luca/.kubernetes/shared/parquet"
   executor:
     cores: 1
     instances: 1

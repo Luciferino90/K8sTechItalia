@@ -53,8 +53,8 @@ mv $SPARK_FALLBACK_HOME/kubernetes/dockerfiles/spark/Dockerfile_Spark $SPARK_FAL
 
 sed -i.bak "s+REPLACE_ME+$MONGODB_SHARED+g" $MONGO_HOME/mongodb_deployment.yaml && rm $MONGO_HOME/mongodb_deployment.yaml.bak
 sed -i.bak "s+REPLACE_ME+$REGISTRY_SHARED+g" $REGISTRY_HOME/kube_registry_rs.yaml && rm $REGISTRY_HOME/kube_registry_rs.yaml.bak
-sed -i.bak "s+REPLACE_ME+$PARQUET_SHARED+g" $SPARK_OPERATOR_HOME/techitalia-spark-operator_docker.yaml && rm $SPARK_OPERATOR_HOME/techitalia-spark-operator_docker.yaml.bak
-sed -i.bak "s+REPLACE_ME+$PARQUET_SHARED+g" $ZEPPELIN_HOME/zeppelin-server_docker.yaml && rm $ZEPPELIN_HOME/zeppelin-server_docker.yaml.bak
+sed -i.bak "s+REPLACE_ME+/c/Users/luca/.kubernetes/shared/parquet+g" $SPARK_OPERATOR_HOME/techitalia-spark-operator_docker.yaml && rm $SPARK_OPERATOR_HOME/techitalia-spark-operator_docker.yaml.bak
+sed -i.bak "s+REPLACE_ME+/Users/luca/.kubernetes/shared/parquet+g" $ZEPPELIN_HOME/zeppelin-server_docker.yaml && rm $ZEPPELIN_HOME/zeppelin-server_docker.yaml.bak
 
 #if [ -d $SPARK_HOME ] ;
 #then 
