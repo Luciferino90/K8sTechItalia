@@ -35,7 +35,7 @@ spec:
           defaultMode: 420
       containers:
         - name: connect
-          image: 'localhost:5000/connect:0.0.2'
+          image: 'registry.me:5000/connect:0.0.2'
           env:
             - name: CONNECT_BOOTSTRAP_SERVERS
               value: 'kafka.techitalia:9092'

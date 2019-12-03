@@ -115,8 +115,8 @@ echo
 sleep 60
 cd $KAFKA_CONNECT_HOME
 docker build -t connect:0.0.2 .
-docker tag connect:0.0.2 localhost:5000/connect:0.0.2
-docker push localhost:5000/connect:0.0.2
+docker tag connect:0.0.2 registry.me:5000/connect:0.0.2
+docker push registry.me:5000/connect:0.0.2
 
 echo "Waiting for MongoDB to be up & running.."
 echo
@@ -141,15 +141,15 @@ echo
 
 cd $SPARK_HOME
 docker build -t spark-home:latest -f kubernetes/dockerfiles/spark/Dockerfile .
-docker tag spark-home:latest localhost:5000/spark-home:latest
-docker push localhost:5000/spark-home:latest
+docker tag spark-home:latest registry.me:5000/spark-home:latest
+docker push registry.me:5000/spark-home:latest
 
 cd $HOME_DIR/sparkstream
 echo "Building Java Spark project"
 echo
 docker build -t tech-spark:latest --build-arg JAR_FILE=mongo-spark-streaming-launch.jar --build-arg JAR_VERSION=0.0.1 --build-arg START_CLASS=it.arubapec.esecurity.mongostreamspark.SpringKafkaApplication .
-docker tag tech-spark:latest localhost:5000/tech-spark:latest
-docker push localhost:5000/tech-spark:latest
+docker tag tech-spark:latest registry.me:5000/tech-spark:latest
+docker push registry.me:5000/tech-spark:latest
 
 cd $SPARK_OPERATOR_HOME
 echo "Setup Spark K8s Operators"
@@ -163,8 +163,8 @@ echo
 
 cd $ZEPPELIN_HOME
 docker build -t zeppelin-home:latest .
-docker tag zeppelin-home:latest localhost:5000/zeppelin-home:latest
-docker push localhost:5000/zeppelin-home:latest
+docker tag zeppelin-home:latest registry.me:5000/zeppelin-home:latest
+docker push registry.me:5000/zeppelin-home:latest
 
 echo "Setup Zeppelin on K8s"
 echo
@@ -173,5 +173,6 @@ kubectl apply -f zeppelin-server.yaml
 TOKEN=$(kubectl get secret | awk '{print $1}' | kubectl describe secret $1 | awk '/ey/' | awk '{print $2}')
 echo
 echo
-echo "Installation ended, login via https://localhost with token $TOKEN"
+echo "Installation ended, login via https://localhost with token:"
+echo "$TOKEN"
 

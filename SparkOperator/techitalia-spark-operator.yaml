@@ -76,7 +76,7 @@ spec:
         claimName: parquet-pv-claim
   type: Java
   mode: cluster
-  image: "localhost:5000/tech-spark:latest"
+  image: "registry.me:5000/tech-spark:latest"
   imagePullPolicy: Always
   mainClass: it.arubapec.esecurity.mongostreamspark.SpringKafkaApplication
   mainApplicationFile: "local:///opt/spark/examples/jars/app.jar/app.jar"

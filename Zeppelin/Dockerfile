@@ -120,6 +120,8 @@ RUN chown -R zeppelinus:zeppelinus /zeppelin-0.9.0-SNAPSHOT
 
 COPY log4j.properties ${Z_HOME}/conf/
 
+COPY 100-interpreter-spec.yaml /zeppelin-0.9.0-SNAPSHOT/k8s/interpreter/100-interpreter-spec.yaml
+
 USER zeppelinus
 
 EXPOSE 8080
