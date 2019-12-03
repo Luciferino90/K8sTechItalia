@@ -122,7 +122,7 @@ COPY log4j.properties ${Z_HOME}/conf/
 
 COPY 100-interpreter-spec.yaml /zeppelin-0.9.0-SNAPSHOT/k8s/interpreter/100-interpreter-spec.yaml
 
-USER zeppelinus
+# USER zeppelinus
 
 EXPOSE 8080
 
