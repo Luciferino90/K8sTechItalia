@@ -1,0 +1,112 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: connect
+  namespace: techitalia
+  labels:
+    k8s-app: connect
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: connect
+  template:
+    metadata:
+      name: connect
+      creationTimestamp: null
+      labels:
+        k8s-app: connect
+    spec:
+      spec:
+      initContainers:
+      - name: wait-for-mongo
+        image: darthcabs/tiny-tools:1
+        args:
+        - /bin/bash
+        - -c
+        - >
+          set -x;
+          sleep 60;
+      volumes:
+      - name: source-connector
+        secret:
+          secretName: source-connector
+          defaultMode: 420
+      containers:
+        - name: connect
+          image: 'luciferino/kafka-connect:0.0.2'
+          env:
+            - name: CONNECT_BOOTSTRAP_SERVERS
+              value: 'kafka.techitalia:9092'
+            - name: CONNECT_REST_ADVERTISED_HOST_NAME
+              value: connect
+            - name: CONNECT_REST_PORT
+              value: '8083'
+            - name: CONNECT_GROUP_ID
+              value: compose-connect-group
+            - name: CONNECT_CONFIG_STORAGE_TOPIC
+              value: docker-connect-configs
+            - name: CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR
+              value: '1'
+            - name: CONNECT_OFFSET_FLUSH_INTERVAL_MS
+              value: '10000'
+            - name: CONNECT_OFFSET_STORAGE_TOPIC
+              value: docker-connect-offsets
+            - name: CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR
+              value: '1'
+            - name: CONNECT_STATUS_STORAGE_TOPIC
+              value: docker-connect-status
+            - name: CONNECT_STATUS_STORAGE_REPLICATION_FACTOR
+              value: '1'
+            - name: CONNECT_KEY_CONVERTER
+              value: org.apache.kafka.connect.json.JsonConverter
+            - name: CONNECT_VALUE_CONVERTER
+              value: org.apache.kafka.connect.json.JsonConverter
+            - name: CONNECT_INTERNAL_KEY_CONVERTER
+              value: org.apache.kafka.connect.json.JsonConverter
+            - name: CONNECT_INTERNAL_VALUE_CONVERTER
+              value: org.apache.kafka.connect.json.JsonConverter
+            - name: CONNECT_LOG4J_ROOT_LOGLEVEL
+              value: INFO
+            - name: CONNECT_LOG4J_LOGGERS
+              value: >-
+                org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR,com.mongodb.kafka=DEBUG
+            - name: CONNECT_PLUGIN_PATH
+              value: usr/share/confluent-hub-components
+            - name: CONNECT_ZOOKEEPER_CONNECT
+              value: 'kafka.technitalia:2181'
+            - name: CLASSPATH
+              value: >-
+                /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.2.2.jar
+            - name: CONNECT_PRODUCER_INTERCEPTOR_CLASSES
+              value: >-
+                io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
+            - name: CONNECT_CONSUMER_INTERCEPTOR_CLASSES
+              value: >-
+                io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor
+          volumeMounts:
+          - name: source-connector
+            mountPath: "/tmp"
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: false
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 60; cd /tmp; curl -X POST -H 'Content-Type: application/json' -d @source-connector.json http://localhost:8083/connectors"]  
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
