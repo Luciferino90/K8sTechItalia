@@ -18,16 +18,16 @@ spec:
       labels:
         k8s-app: connect
     spec:
-      spec:
-      initContainers:
-      - name: wait-for-mongo
-        image: darthcabs/tiny-tools:1
-        args:
-        - /bin/bash
-        - -c
-        - >
-          set -x;
-          sleep 60;
+      #spec:
+      #initContainers:
+      #- name: wait-for-mongo
+      #  image: darthcabs/tiny-tools:1
+      #  args:
+      #  - /bin/bash
+      #  - -c
+      #  - >
+      #    set -x;
+      #    sleep 60;
       volumes:
       - name: source-connector
         secret:

@@ -10,7 +10,7 @@ spec:
   capacity:
     storage: 3Gi
   hostPath:
-    path: "/Users/luca/.kubernetes/shared/parquet"
+    path: "REPLACE_ME"
     type: ''
   accessModes:
   - ReadWriteMany
