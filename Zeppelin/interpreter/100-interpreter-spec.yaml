@@ -54,6 +54,8 @@ spec:
     - name: {{key}}
       value: {{value}}
   {% endfor %}
+    - name: SPARK_SUBMIT_OPTIONS
+      value: "--conf spark.kubernetes.executor.volumes.persistentVolumeClaim.parquet-pvc.mount.path=/zeppelin/k8s-custom"
   {% if zeppelin.k8s.interpreter.group.name == "spark" %}
     volumeMounts:
     - name: spark-home

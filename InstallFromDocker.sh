@@ -6,6 +6,9 @@ echo
 
 HOME_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+ZEPPELIN_SHARED=/c/zeppelin/k8s-custom
+mkdir -p $ZEPPELIN_SHARED
+
 K8S_HOME=$HOME/.kubernetes
 SRC_HOME=$K8S_HOME/src
 mkdir -p $SRC_HOME
@@ -56,9 +59,9 @@ cp -r Parquet/* $PARQUET_HOME
 
 sed -i.bak "s+REPLACE_ME+$MONGODB_SHARED+g" $MONGO_HOME/mongodb_deployment.yaml && rm $MONGO_HOME/mongodb_deployment.yaml.bak
 # sed -i.bak "s+REPLACE_ME+$REGISTRY_SHARED+g" $REGISTRY_HOME/kube_registry_rs.yaml && rm $REGISTRY_HOME/kube_registry_rs.yaml.bak
-sed -i.bak "s+REPLACE_ME+/c/Users/luca/.kubernetes/shared/parquet+g" $SPARK_OPERATOR_HOME/techitalia-spark-operator_docker.yaml && rm $SPARK_OPERATOR_HOME/techitalia-spark-operator_docker.yaml.bak
-sed -i.bak "s+REPLACE_ME+/Users/luca/.kubernetes/shared/parquet+g" $ZEPPELIN_HOME/zeppelin-server_docker.yaml && rm $ZEPPELIN_HOME/zeppelin-server_docker.yaml.bak
-sed -i.bak "s+REPLACE_ME+/root/.kubernetes/shared/parquet+g" $PARQUET_HOME/parquet.yaml.yaml && rm $PARQUET_HOME/parquet.yaml.bak
+sed -i.bak "s+REPLACE_ME+/c/zeppelin/k8s-customt+g" $SPARK_OPERATOR_HOME/techitalia-spark-operator_docker.yaml && rm $SPARK_OPERATOR_HOME/techitalia-spark-operator_docker.yaml.bak
+sed -i.bak "s+REPLACE_ME+/zeppelin/k8s-custom+g" $ZEPPELIN_HOME/zeppelin-server_docker.yaml && rm $ZEPPELIN_HOME/zeppelin-server_docker.yaml.bak
+sed -i.bak "s+REPLACE_ME+/c/zeppelin/k8s-custom+g" $PARQUET_HOME/parquet.yaml && rm $PARQUET_HOME/parquet.yaml.bak
 
 #if [ -d $SPARK_HOME ] ;
 #then 
@@ -130,7 +133,7 @@ echo
 sleep 60
 MONGO_POD_NAME=$(kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' --namespace=techitalia | grep mongo)
 kubectl exec -it --namespace=techitalia "$MONGO_POD_NAME" -- bash -c "mongo -u tech -p italia --authenticationDatabase techitalia --eval \"db.getSiblingDB('techitalia').createCollection('documents')\""
-kubectl exec -it --namespace=techitalia "$MONGO_POD_NAME" -- bash -c "mongo -u tech -p italia --authenticationDatabase techitalia --eval \"db.getSiblingDB('techitalia').createCollection('movies')\""
+#kubectl exec -it --namespace=techitalia "$MONGO_POD_NAME" -- bash -c "mongo -u tech -p italia --authenticationDatabase techitalia --eval \"db.getSiblingDB('techitalia').createCollection('movies')\""
 
 echo "Setup Kafka Connect on K8s"
 echo
@@ -151,9 +154,9 @@ echo
 cd $SPARK_OPERATOR_HOME
 echo "Setup Spark K8s Operators"
 echo
-helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
-helm install incubator/sparkoperator --namespace techitalia --set enableWebhook=true --generate-name
-# kubectl apply -f techitalia-spark-operator_docker.yaml
+#helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
+#helm install incubator/sparkoperator --namespace techitalia --set enableWebhook=true --generate-name
+#kubectl apply -f techitalia-spark-operator_docker.yaml
 
 echo "Setup Zeppelin Image via Docker Registry"
 echo

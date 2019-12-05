@@ -44,7 +44,7 @@ spec:
         claimName: parquet-pv-claim
   type: Java
   mode: cluster
-  image: "luciferino/mongosparkstreaming:0.0.1"
+  image: "luciferino/mongosparkstreaming:0.0.2"
   imagePullPolicy: Always
   mainClass: it.arubapec.esecurity.mongostreamspark.SpringKafkaApplication
   mainApplicationFile: "local:///opt/spark/examples/jars/app.jar/app.jar"
@@ -60,10 +60,14 @@ spec:
     serviceAccount: spark
     volumeMounts:
       - name: parquet
-        mountPath: "/Users/luca/.kubernetes/shared/parquet"
+        mountPath: "/zeppelin/k8s-custom"
   executor:
     cores: 1
     instances: 1
     memory: "512m"
+    volumes:
+      - name: parquet
+        persistentVolumeClaim:
+          claimName: parquet-pv-claim
     labels:
       version: 2.4.4
