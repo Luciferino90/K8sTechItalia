@@ -13,8 +13,8 @@ spec:
     app: techitalia-populator
   type: NodePort
 ---
-apiVersion: extensions/v1beta1
 kind: Deployment
+apiVersion: apps/v1
 metadata:
   name: techitalia-populator
   namespace: techitalia
