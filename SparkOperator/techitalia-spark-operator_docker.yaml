@@ -42,11 +42,13 @@ spec:
     - name: parquet
       persistentVolumeClaim:
         claimName: parquet-pv-claim
+    - name: spark-conf-volume
+      emptyDir: {}
   type: Java
   mode: cluster
-  image: "luciferino/mongosparkstreaming:0.0.2"
+  image: "luciferino/mongosparkstreaming:0.0.3"
   imagePullPolicy: Always
-  mainClass: it.arubapec.esecurity.mongostreamspark.SpringKafkaApplication
+  mainClass: it.usuratonkachi.mongostreamspark.SpringKafkaApplication
   mainApplicationFile: "local:///opt/spark/examples/jars/app.jar/app.jar"
   sparkVersion: "2.4.4"
   restartPolicy:

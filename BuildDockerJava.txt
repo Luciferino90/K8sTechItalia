@@ -1,6 +1,6 @@
-docker build -t mongosparkstreaming:0.0.2 --build-arg JAR_FILE=mongo-spark-streaming-launch.jar --build-arg JAR_VERSION=0.0.2 --build-arg START_CLASS=it.arubapec.esecurity.mongostreamspark.SpringKafkaApplication .
-docker tag mongosparkstreaming:0.0.2 luciferino/mongosparkstreaming:0.0.2
-docker push luciferino/mongosparkstreaming:0.0.2
+docker build -t mongosparkstreaming:0.0.3 --build-arg JAR_FILE=mongo-spark-streaming-launch.jar --build-arg JAR_VERSION=0.0.3 --build-arg START_CLASS=itit.usuratonkachi.mongostreamspark.SpringKafkaApplication .
+docker tag mongosparkstreaming:0.0.3 luciferino/mongosparkstreaming:0.0.3
+docker push luciferino/mongosparkstreaming:0.0.3
 
 docker build -t tech-populator:0.0.1 --build-arg JAR_FILE=populatorservicespring.jar --build-arg JAR_VERSION=0.0.1 --build-arg START_CLASS=it.usuratonkachi.populatorservicespring.PopulatorServiceSpringApplication .
 docker tag tech-populator:0.0.1 luciferino/tech-populator:0.0.1
