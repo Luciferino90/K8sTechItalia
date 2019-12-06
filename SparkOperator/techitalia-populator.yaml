@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: techitalia-populator
+  namespace: techitalia
+  labels:
+    app: techitalia-populator
+spec:
+  ports:
+  - port: 8080
+    nodePort: 32080
+  selector:
+    app: techitalia-populator
+  type: NodePort
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: techitalia-populator
+  namespace: techitalia
+  labels:
+    app: techitalia-populator
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: techitalia-populator
+  template:
+    metadata:
+      name: techitalia-populator
+      labels:
+        app: techitalia-populator
+    spec:
+      containers:
+      - image: luciferino/tech-populator:0.0.1
+        imagePullPolicy: Always
+        name: techitalia-populator
+        resources:
+          requests:
+            memory: "500Mi"
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 8081
+          name: actuator
+        livenessProbe:
+          httpGet:
+            path: "/actuator/health"
+            port: 8081
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: "/actuator/health"
+            port: 8081
+          initialDelaySeconds: 40
+          periodSeconds: 30
+          timeoutSeconds: 5
+        securityContext:
+          privileged: false

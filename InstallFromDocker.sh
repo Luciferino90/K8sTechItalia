@@ -76,15 +76,15 @@ SPARK_HOME=$SPARK_FALLBACK_HOME
 echo "Environment setup ended"
 echo
 
-echo "Setup Kubernetes Dashboard on K8s"
-echo
+# echo "Setup Kubernetes Dashboard on K8s"
+# echo
 
-cd $DASHBOARD_HOME
-kubectl apply -f dashboard.yaml
-kubectl get secret | awk '{print $1}' | kubectl describe secret $1 | awk '/ey/' | awk '{print "Dashboard Token Here ---> " $2}'
+# cd $DASHBOARD_HOME
+# kubectl apply -f dashboard.yaml
+# kubectl get secret | awk '{print $1}' | kubectl describe secret $1 | awk '/ey/' | awk '{print "Dashboard Token Here ---> " $2}'
 
-echo "Setup Docker Registry on K8s"
-echo
+# echo "Setup Docker Registry on K8s"
+# echo
 
 # cd $REGISTRY_HOME
 # kubectl apply -f kube_registry_ns.yaml
@@ -107,7 +107,7 @@ kubectl apply -f parquet.yaml
 echo "Waiting for MongoDB to be up & running.."
 echo
 
-sleep 60
+sleep 40
 
 echo "Setup Kafka and Zookeeper on K8s"
 echo
@@ -115,51 +115,42 @@ echo
 cd $KAFKA_HOME
 kubectl apply -f kafka_deployment.yaml
 kubectl apply -f kafka_service.yaml
-# kubectl apply -f kafka_manager_deployment.yaml
-# kubectl apply -f kafka_manager_service.yaml
 
-echo "Setup Kafka Connect via Docker Registry"
-echo "Waiting for registry to be up & running.."
-echo
+sleep 30
 
-cd $KAFKA_CONNECT_HOME
-
-echo "Waiting for MongoDB to be up & running.."
-echo
-
-echo "Initializing base data for MongoDB"
-echo
-
-sleep 60
 MONGO_POD_NAME=$(kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' --namespace=techitalia | grep mongo)
 kubectl exec -it --namespace=techitalia "$MONGO_POD_NAME" -- bash -c "mongo -u tech -p italia --authenticationDatabase techitalia --eval \"db.getSiblingDB('techitalia').createCollection('documents')\""
-#kubectl exec -it --namespace=techitalia "$MONGO_POD_NAME" -- bash -c "mongo -u tech -p italia --authenticationDatabase techitalia --eval \"db.getSiblingDB('techitalia').createCollection('movies')\""
+kubectl exec -it --namespace=techitalia "$MONGO_POD_NAME" -- bash -c "mongo -u tech -p italia --authenticationDatabase techitalia --eval \"db.getSiblingDB('techitalia').createCollection('internaldocuments')\""
 
 echo "Setup Kafka Connect on K8s"
 echo
 
+cd $KAFKA_CONNECT_HOME
+
 kubectl apply -f kafka_connect_secret.yaml
 kubectl apply -f kafka_connect_deployment_docker.yaml
 
+cd $SPARK_OPERATOR_HOME
+kubectl apply -f techitalia-populator.yaml
 
-echo "Setup Spark Image via Docker Registry"
-echo
+#echo "Setup Spark Image via Docker Registry"
+#echo
 
-cd $SPARK_HOME
+#cd $SPARK_HOME
 
-cd $HOME_DIR/sparkstream
-echo "Building Java Spark project"
-echo
+#cd $HOME_DIR/sparkstream
+#echo "Building Java Spark project"
+#echo
 
 cd $SPARK_OPERATOR_HOME
 echo "Setup Spark K8s Operators"
 echo
-#helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
-#helm install incubator/sparkoperator --namespace techitalia --set enableWebhook=true --generate-name
-#kubectl apply -f techitalia-spark-operator_docker.yaml
+helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
+helm install incubator/sparkoperator --namespace techitalia --set enableWebhook=true --generate-name
+kubectl apply -f techitalia-spark-operator_docker.yaml
 
-echo "Setup Zeppelin Image via Docker Registry"
-echo
+# echo "Setup Zeppelin Image via Docker Registry"
+#echo
 
 cd $ZEPPELIN_HOME
 
@@ -172,4 +163,3 @@ echo
 echo
 echo "Installation ended, login via https://localhost with token:"
 echo "$TOKEN"
-
