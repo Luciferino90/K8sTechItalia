@@ -87,7 +87,7 @@ spec:
           lifecycle:
             postStart:
               exec:
-                command: ["/bin/sh", "-c", "sleep 10; cd /tmp; curl -X POST -H 'Content-Type: application/json' -d @source-connector-documents.json http://localhost:8083/connectors; sleep 5; curl -X POST -H 'Content-Type: application/json' -d @source-connector-internaldocuments.json http://localhost:8083/connectors"]  
+                command: ["/bin/sh", "-c", "sleep 60; cd /tmp; curl -X POST -H 'Content-Type: application/json' -d @source-connector-documents.json http://localhost:8083/connectors; sleep 5; curl -X POST -H 'Content-Type: application/json' -d @source-connector-internaldocuments.json http://localhost:8083/connectors"]  
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst
