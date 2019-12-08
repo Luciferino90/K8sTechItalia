@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: REPLACE_NAMESPACE-populator
+  namespace: REPLACE_NAMESPACE
+  labels:
+    app: REPLACE_NAMESPACE-populator
+spec:
+  ports:
+  - port: 8080
+    nodePort: 32080
+  selector:
+    app: REPLACE_NAMESPACE-populator
+  type: NodePort
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: REPLACE_NAMESPACE-populator
+  namespace: REPLACE_NAMESPACE
+  labels:
+    app: REPLACE_NAMESPACE-populator
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: REPLACE_NAMESPACE-populator
+  template:
+    metadata:
+      name: REPLACE_NAMESPACE-populator
+      labels:
+        app: REPLACE_NAMESPACE-populator
+    spec:
+      containers:
+      - image: REPLACE_REGISTRY/tech-populator:0.0.2
+        imagePullPolicy: Always
+        name: REPLACE_NAMESPACE-populator
+        resources:
+          requests:
+            memory: "500Mi"
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 8081
+          name: actuator
+        livenessProbe:
+          httpGet:
+            path: "/actuator/health"
+            port: 8081
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: "/actuator/health"
+            port: 8081
+          initialDelaySeconds: 40
+          periodSeconds: 30
+          timeoutSeconds: 5
+        securityContext:
+          privileged: false

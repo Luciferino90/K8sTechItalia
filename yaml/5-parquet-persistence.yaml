@@ -1,0 +1,32 @@
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: parquet-pv
+  namespace: REPLACE_NAMESPACE
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 3Gi
+  hostPath:
+    path: "REPLACE_PARQUET_MOUNT"
+    type: ''
+  accessModes:
+  - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: hostpath
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: parquet-pv-claim
+  namespace: REPLACE_NAMESPACE
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 3Gi
+  volumeName: parquet-pv
+  storageClassName: hostpath

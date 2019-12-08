@@ -1,0 +1,75 @@
+##### https://github.com/GoogleCloudPlatform/spark-on-k8s-operator/blob/master/docs/quick-start-guide.md
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: spark
+  namespace: REPLACE_NAMESPACE
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: REPLACE_NAMESPACE
+  name: spark-role
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["*"]
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: spark-role-binding
+  namespace: REPLACE_NAMESPACE
+subjects:
+- kind: ServiceAccount
+  name: spark
+  namespace: REPLACE_NAMESPACE
+roleRef:
+  kind: Role
+  name: spark-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: SparkApplication
+metadata:
+  name: spark-techitalia
+  namespace: REPLACE_NAMESPACE
+spec:
+  volumes:
+    - name: parquet
+      persistentVolumeClaim:
+        claimName: parquet-pv-claim
+    - name: spark-conf-volume
+      emptyDir: {}
+  type: Java
+  mode: cluster
+  image: "REPLACE_REGISTRY/mongosparkstreaming:0.0.5"
+  imagePullPolicy: Always
+  mainClass: it.usuratonkachi.mongostreamspark.SpringKafkaApplication
+  mainApplicationFile: "local:///opt/spark/examples/jars/app.jar/app.jar"
+  sparkVersion: "2.4.4"
+  restartPolicy:
+    type: Never
+  driver:
+    cores: 1
+    coreLimit: "1200m"
+    memory: "512m"
+    labels:
+      version: 2.4.4
+    serviceAccount: spark
+    volumeMounts:
+      - name: parquet
+        mountPath: REPLACE_PARQUET_MOUNT
+  executor:
+    cores: 1
+    instances: 1
+    memory: "512m"
+    volumes:
+      - name: parquet
+        persistentVolumeClaim:
+          claimName: parquet-pv-claim
+    labels:
+      version: 2.4.4

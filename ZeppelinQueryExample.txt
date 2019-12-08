@@ -1,0 +1,4 @@
+val df_internal = spark.read.load("/zeppelin/k8s-custom/mongo_internaldocuments.parquet");
+z.show(df_internal);
+val df = spark.read.load("/zeppelin/k8s-custom/mongo_documents.parquet");
+z.show(df);

@@ -1,6 +1,0 @@
-val newDataDF = spark.read.load("/zeppelin/k8s-custom/mongo_documents.parquet").show(49);
-val newDataDF = spark.read.load("/zeppelin/k8s-custom/mongo_internaldocuments.parquet").show(49);
-
-
-val df = spark.read.load("/zeppelin/k8s-custom/mongo_internaldocuments.parquet");
-z.show(df)

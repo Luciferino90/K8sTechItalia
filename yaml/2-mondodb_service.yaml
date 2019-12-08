@@ -1,0 +1,22 @@
+---
+### MONGODB - Service
+kind: Service
+apiVersion: v1
+metadata:
+  name: mongodb
+  namespace: REPLACE_NAMESPACE
+  labels:
+    k8s-app: mongodb
+spec:
+  ports:
+    - name: tcp-27017-27017-zfd7s
+      protocol: TCP
+      port: 27017
+      targetPort: 27017
+      nodePort: 31560
+  selector:
+    k8s-app: mongodb
+  clusterIP: 10.105.27.222
+  type: LoadBalancer
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
