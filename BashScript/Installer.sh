@@ -1,11 +1,12 @@
 #!/bin/bash
 
 unameOut="$(uname -s)"
+GENERATE_NAME=""
 case "${unameOut}" in
     Linux*)     LOCAL_BASE_PATH=/;; #MACHINE=Linux;;
-    Darwin*)    LOCAL_BASE_PATH=/;; #MACHINE=Mac;;
-    CYGWIN*)    LOCAL_BASE_PATH=/c;; #MACHINE=Cygwin;;
-    MINGW*)     LOCAL_BASE_PATH=/c;; #MACHINE=MinGw;;
+    Darwin*)    LOCAL_BASE_PATH=/;GENERATE_NAME=--generate-name;; #MACHINE=Mac;;
+    CYGWIN*)    LOCAL_BASE_PATH=/c;GENERATE_NAME=--generate-name;; #MACHINE=Cygwin;;
+    MINGW*)     LOCAL_BASE_PATH=/c;GENERATE_NAME=--generate-name;; #MACHINE=MinGw;;
     *)          LOCAL_BASE_PATH=/;; #MACHINE="UNKNOWN:${unameOut}"
 esac
 
@@ -104,7 +105,7 @@ kubectl apply -f 12-techitalia_populator.yaml
 echo "Setup Spark K8s Operators"
 echo
 helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
-helm install incubator/sparkoperator --namespace techitalia --set enableWebhook=true --generate-name
+helm install incubator/sparkoperator --namespace techitalia --set enableWebhook=true $GENERATE_NAME
 kubectl apply -f 13-techitalia_spark_operator.yaml
 
 echo "Setup Zeppelin on K8s"
