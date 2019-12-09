@@ -16,7 +16,6 @@ spec:
       nodePort: 31560
   selector:
     k8s-app: mongodb
-  clusterIP: 10.105.27.222
   type: LoadBalancer
   sessionAffinity: None
   externalTrafficPolicy: Cluster
